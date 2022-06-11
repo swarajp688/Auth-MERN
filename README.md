@@ -26,16 +26,16 @@
 ### Login
 ![image](https://user-images.githubusercontent.com/57672103/173188850-95b27527-9f44-41d2-891e-cbb517f4b6ff.png)
 
-###Dashboard
+### Dashboard
 
 ![image](https://user-images.githubusercontent.com/57672103/173188864-5ed85586-89a9-4dbd-b8b7-30cc9634565c.png)
 
-###Create candidate
+### Create candidate
 
 ![image](https://user-images.githubusercontent.com/57672103/173188893-1fcf8895-a25f-4d7e-9c4c-0b89ba91ea52.png)
 
 
-###Update candidate
+### Update candidate
 
 ![image](https://user-images.githubusercontent.com/57672103/173188870-58343ecd-4362-445c-bb79-eb87e91329f6.png)
 
