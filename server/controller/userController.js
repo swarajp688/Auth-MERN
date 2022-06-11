@@ -1,47 +1,88 @@
 const express = require("express");
-const UserData = require('../Models/user.model');
+const UserData = require("../Models/user.model");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
+async function register(req, res) {
+  const { name, email, password } = req.body;
+  if (!name || !email || !password) {
+    return res.status(400).json({
+      message: "Email and password are required",
+    });
+  }
+  const userExists = await UserData.findOne({ email });
+  if (userExists) {
+    return res.status(400).json({
+        status: "error",
+        message: "User already exists",
+    });
+    throw new Error("User already exists");
+  }
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
 
-async function register(req,res){
-        await UserData.findOne({email:req.body.email}, async (err,user)=>{
-            if(err){
-                console.log('error in siging up'); 
-                return res.status(400).json({error:'error',message:'error in siging up'});
-        }
-        if(user){
-            return res.status(400).json({error:'error',message:'email already exists'});
-        }else {
-            UserData.create({
-                name: req.body.userName,
-                lastName: req.body.lastName,
-                email: req.body.email,
-                password: req.body.password
-            }, function(err, user){
-                if(err){
-                    console.log(err,"error in signing up");
-                    return res.json({status:'error',error:"Error in signing up"});
-                }
-                console.log(user,"user created");
-                return res.status(200).json({status:'OK', message:'User Created'})
-            })
-        }
+  const user = await UserData.create({
+    name,
+    email,
+    password: hashedPassword,
+  });
+  if (user) {
+    return res.status(200).json({
+      _id: user.id,
+      name: user.name,
+      email: user.email,
+      token: generateToken(user._id),
+    });
+  } else {
+    return res.status(400).json({
+      status: "error",
+      message: "Invalid user data",
+    });
+    throw new Error("Invalid user data");
+  }
+}
+
+async function login(req, res) {
+  const { email, password } = req.body;
+  try {
+    const user = await UserData.findOne({ email });
+    if(!user) {
+      res.status(400).json({
+        status: "error",
+        message: "user not exist",
+      });
+      throw new Error("user not exist");
+    }else{
+      const isMatch = await bcrypt.compare(password, user.password);
+      if(!isMatch) {
+        res.status(400).json({
+          status: "error",
+          message: "Invalid Email password",
         });
-}
-
-async function login(req,res){
-    const user = await UserData.findOne({email:req.body.email});
-    if(user){
-        console.log(user.password);
-        if(user.password === req.body.password){
-        console.log(user);
-        return res.status(200).json({status:'OK',message:'User Found',user:user});
-        }else{
-            return res.status(400).json({error:'error',message:'Invalid Password'});
-        }
+        throw new Error("Invalid Email or password");
+      }else{
+        res.status(200).json({
+          status:'Ok',
+          _id: user.id,
+          name: user.name,
+          email: user.email,
+          token: generateToken(user._id),
+        });
+      }
     }
+  } catch (error) {
+    res.status(400).json({
+      status:'error',
+      message: "Invalid email or password",
+      error: error,
+    });
+  }
 }
 
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.TOKEN);
+};
 module.exports = {
-    register,
-    login
-}
+  register,
+  login,
+};

@@ -18,7 +18,7 @@ const userRouter = require('./routes');
 app.use('/',userRouter);
 async function startServer (){
     await mongoConnect();
-    app.listen(3001,()=>{
+    app.listen(1000,()=>{
         console.log('server started');
     })
 }
