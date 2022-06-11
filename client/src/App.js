@@ -9,6 +9,7 @@ import {
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from 'react-hot-toast';
+import NotFound from "./components/NotFound";
 function App() {
 
   return (
@@ -18,6 +19,8 @@ function App() {
       <Route path="/login" element={<Login />}></Route>
       <Route path="/register" element={<Signup />}></Route>
       <Route path="/dashboard" element={<Dashboard />}></Route>
+      {/* error route */}
+      <Route path="*" element={<NotFound />}></Route>
     </Routes>
     <Toaster />
     </BrowserRouter>
